@@ -523,3 +523,411 @@ WHERE inv2.cantidad < inv2.stock_inicial * 0.1);
 | Termostatos |
 +-------------+
 ~~~
+
+1. Crear un procedimiento almacenado para insertar una nueva reparación.
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS insertar_reparacion;
+CREATE PROCEDURE insertar_reparacion(
+IN ir_fecha DATE,
+IN ir_vehiculo_id INT,
+IN ir_empleado_id INT,
+IN ir_servicio_id INT,
+IN ir_costo_total double(10,3),
+IN ir_duracion TIME,
+IN ir_descripcion VARCHAR(50)
+)
+BEGIN 
+INSERT INTO reparaciones (reparacion_id, fecha, vehiculo_id, empleado_id, servicio_id, costo_total, duracion, descripcion)
+VALUES (NULL, ir_fecha, ir_vehiculo_id, ir_empleado_id, ir_servicio_id, ir_costo_total, ir_duracion, ir_descripcion);
+END $$
+
+DELIMITER ;
+
+CALL insertar_reparacion('2024-08-01', 1,2,2,20.000, '2:00:00', 'NUEVO SERVICIO');
++---------------+------------+-------------+-------------+-------------+-------------+----------+-----------------------------------------+
+| reparacion_id | fecha      | vehiculo_id | empleado_id | servicio_id | costo_total | duracion | descripcion                             |
++---------------+------------+-------------+-------------+-------------+-------------+----------+-----------------------------------------+
+|             1 | 2023-01-15 |           1 |           2 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|             2 | 2023-02-25 |           2 |           3 |           2 |     100.000 | 01:00:00 | Cambio Aceite para carro                |
+|             3 | 2023-03-15 |           3 |           4 |           3 |      70.000 | 01:00:00 | Revision frenos del vehiculo            |
+|             4 | 2023-04-12 |           4 |           5 |           4 |     100.000 | 01:00:00 | Recarga Aire Acondicionado del vehiculo |
+|             5 | 2023-05-01 |           5 |           6 |           5 |      25.000 | 01:00:00 | Reparacion de parabrisas del vehiculo   |
+|             6 | 2023-06-30 |           6 |           2 |           6 |      30.000 | 01:00:00 | Lavado a todo el vehiculo               |
+|             7 | 2023-07-30 |           7 |           3 |           4 |     100.000 | 01:00:00 | Recarga Aire Acondicionado del vehiculo |
+|             8 | 2023-08-29 |           1 |           4 |           3 |      70.000 | 01:00:00 | Revision frenos del vehiculo            |
+|             9 | 2023-09-28 |           2 |           5 |           5 |      25.000 | 01:00:00 | Reparacion de parabrisas del vehiculo   |
+|            10 | 2023-10-27 |           3 |           6 |           6 |      30.000 | 01:00:00 | Lavado a todo el vehiculo               |
+|            11 | 2023-11-22 |           4 |           2 |           2 |     100.000 | 01:00:00 | Cambio Aceite para carro                |
+|            12 | 2023-12-24 |           5 |           3 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            13 | 2024-01-26 |           6 |           4 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            14 | 2024-02-15 |           7 |           5 |           2 |     100.000 | 01:00:00 | Cambio Aceite para carro                |
+|            15 | 2024-03-12 |           1 |           6 |           3 |      70.000 | 01:00:00 | Revision frenos del vehiculo            |
+|            16 | 2024-04-10 |           1 |           4 |           4 |     100.000 | 01:00:00 | Recarga Aire Acondicionado del vehiculo |
+|            17 | 2024-05-08 |           3 |           3 |           5 |      25.000 | 01:00:00 | Reparacion de parabrisas del vehiculo   |
+|            18 | 2024-06-07 |           2 |           6 |           6 |      30.000 | 01:00:00 | Lavado a todo el vehiculo               |
+|            19 | 2024-06-06 |           6 |           2 |           4 |     100.000 | 01:00:00 | Recarga Aire Acondicionado del vehiculo |
+|            20 | 2024-06-01 |           4 |           5 |           3 |      30.000 | 01:00:00 | Revision frenos del vehiculo            |
+|            21 | 2024-07-02 |           7 |           3 |           6 |      30.000 | 01:00:00 | Lavado a todo el vehiculo               |
+|            22 | 2024-08-04 |           4 |           5 |           5 |      25.000 | 01:00:00 | Reparacion de parabrisas del vehiculo   |
+|            23 | 2024-08-10 |           5 |           4 |           2 |     100.000 | 01:00:00 | Cambio Aceite para carro                |
+|            24 | 2024-08-11 |           1 |           6 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            25 | 2024-09-12 |           2 |           2 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            26 | 2024-10-18 |           3 |           3 |           4 |     100.000 | 01:00:00 | Recarga Aire Acondicionado del vehiculo |
+|            27 | 2024-11-12 |           6 |           4 |           5 |      25.000 | 01:00:00 | Reparacion de parabrisas del vehiculo   |
+|            28 | 2024-11-25 |           5 |           2 |           6 |      30.000 | 01:00:00 | Lavado a todo el vehiculo               |
+|            29 | 2024-12-15 |           5 |           3 |           2 |     100.000 | 01:00:00 | Cambio Aceite para carro                |
+|            30 | 2024-12-25 |           2 |           5 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            31 | 2024-12-15 |           3 |           4 |           6 |      70.000 | 04:00:00 | Lavado del vehiculo                     |
+|            32 | 2024-01-15 |           1 |           2 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            33 | 2024-08-01 |           1 |           2 |           2 |      20.000 | 02:00:00 | NUEVO SERVICIO                          |
++---------------+------------+-------------+-------------+-------------+-------------+----------+-----------------------------------------+
+~~~
+
+
+2. Crear un procedimiento almacenado para actualizar el inventario de una pieza.
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS actualizar_pieza;
+CREATE PROCEDURE actualizar_pieza(
+IN p_pieza_id INT,
+IN p_nombre VARCHAR(25),
+IN p_descripcion VARCHAR(100),
+IN p_precio DOUBLE(10,3),
+IN p_proveedor_id INT
+)
+BEGIN
+UPDATE pieza
+SET nombre = p_nombre,
+descripcion = p_descripcion,
+precio = p_precio,
+proveedor_id = p_proveedor_id
+WHERE pieza_id = p_pieza_id;
+END$$
+
+DELIMITER ;
+
+CALL actualizar_pieza(11, 'Tuercas' , 'Tuercas para el carro',6000,1);
++----------+--------------------+-------------------------------+----------+--------------+
+| pieza_id | nombre             | descripcion                   | precio   | proveedor_id |
++----------+--------------------+-------------------------------+----------+--------------+
+|        1 | Retrovisor         | Retrovisores para carro       |   25.000 |            1 |
+|        2 | LLanta             | LLanta para el carro          |  150.000 |            2 |
+|        3 | Bateria            | Baterias para carro           |  150.000 |            3 |
+|        4 | Tornillos          | Tornillos  para carro         |    2.000 |            4 |
+|        5 | Filtros Aire       | Filtros Aire para carro       |   20.000 |            1 |
+|        6 | Bujias             | Bujias para carro             |   15.000 |            2 |
+|        7 | Bombas Agua        | Bombas Agua para carro        |   25.000 |            4 |
+|        8 | Radiadores         | Radiadores para carro         |   50.000 |            3 |
+|        9 | Termostatos        | Termostatos para carro        |   15.000 |            2 |
+|       10 | Mangueras Radiador | mangueras radiador para carro |   50.000 |            1 |
+|       11 | Tuercas            | Tuercas para el carro         | 6000.000 |            1 |
++----------+--------------------+-------------------------------+----------+--------------+
+~~~
+
+
+3. Crear un procedimiento almacenado para eliminar una cita
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS eliminar_cita;
+CREATE PROCEDURE eliminar_cita(
+IN e_cita_id INT
+)
+BEGIN
+DELETE FROM cita
+WHERE cita_id = e_cita_id;
+END$$
+
+DELIMITER ;
+
+CALL eliminar_cita(11);
+
++---------+---------------------+------------+-------------+-------------+
+| cita_id | fecha_hora          | cliente_id | vehiculo_id | servicio_id |
++---------+---------------------+------------+-------------+-------------+
+|       1 | 2023-01-01 14:30:00 |          1 |           1 |           2 |
+|       2 | 2023-03-05 14:30:00 |          2 |           2 |           1 |
+|       3 | 2023-04-15 13:30:00 |          3 |           3 |           6 |
+|       4 | 2023-05-12 16:30:00 |          4 |           4 |           3 |
+|       5 | 2023-06-17 17:30:00 |          5 |           5 |           1 |
+|       6 | 2023-07-25 18:30:00 |          1 |           6 |           1 |
+|       7 | 2023-08-12 12:00:00 |          2 |           7 |           2 |
+|       8 | 2023-09-17 16:00:00 |          3 |           3 |           5 |
+|       9 | 2023-10-15 11:00:00 |          4 |           4 |           6 |
+|      10 | 2023-11-29 18:00:00 |          5 |           5 |           2 |
+|      12 | 2024-01-02 21:00:00 |          2 |           2 |           6 |
+|      13 | 2024-02-07 22:00:00 |          3 |           3 |           5 |
+|      14 | 2024-03-12 23:00:00 |          4 |           4 |           4 |
+|      15 | 2024-04-16 06:00:00 |          5 |           5 |           3 |
+|      16 | 2024-05-18 16:00:00 |          1 |           6 |           2 |
+|      17 | 2024-06-20 15:00:00 |          2 |           7 |           1 |
+|      18 | 2024-07-22 12:00:00 |          3 |           3 |           5 |
+|      19 | 2024-08-25 10:00:00 |          4 |           4 |           4 |
+|      20 | 2024-09-28 11:00:00 |          5 |           5 |           6 |
+|      21 | 2024-10-30 12:00:00 |          1 |           6 |           1 |
+|      22 | 2024-11-12 17:00:00 |          2 |           7 |           3 |
+|      23 | 2024-12-17 13:00:00 |          3 |           3 |           2 |
+|      24 | 2024-12-15 12:00:00 |          4 |           4 |           6 |
++---------+---------------------+------------+-------------+-------------+
+~~~
+
+4. Crear un procedimiento almacenado para generar una factura
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS generar_factura;
+CREATE PROCEDURE generar_factura(
+IN gf_fecha DATE,
+IN gf_total DOUBLE(10,3),
+IN gf_cliente_id INT
+)
+BEGIN
+INSERT INTO facturacion(fecha, total,cliente_id)
+VALUES(gf_fecha,gf_total,gf_cliente_id);
+END $$
+
+DELIMITER ;
+
+CALL generar_factura('2024-12-29', 30.000, 2);
+
++------------+------------+---------+------------+
+| factura_id | fecha      | total   | cliente_id |
++------------+------------+---------+------------+
+|          1 | 2023-01-15 | 150.000 |          1 |
+|          2 | 2023-02-25 | 120.000 |          2 |
+|          3 | 2023-03-15 | 130.000 |          3 |
+|          4 | 2023-04-12 | 140.000 |          4 |
+|          5 | 2023-05-01 | 150.000 |          5 |
+|          6 | 2023-06-30 | 110.000 |          1 |
+|          7 | 2023-07-30 |  50.000 |          2 |
+|          8 | 2023-08-29 |  60.000 |          3 |
+|          9 | 2023-09-28 |  70.000 |          4 |
+|         10 | 2023-10-27 |  80.000 |          5 |
+|         11 | 2023-11-22 |  50.000 |          1 |
+|         12 | 2023-12-24 |  90.000 |          2 |
+|         13 | 2024-01-26 | 150.000 |          3 |
+|         14 | 2024-02-15 | 110.000 |          4 |
+|         15 | 2024-03-12 | 125.000 |          5 |
+|         16 | 2024-04-10 | 130.000 |          1 |
+|         17 | 2024-05-08 | 160.000 |          2 |
+|         18 | 2024-06-07 | 145.000 |          3 |
+|         19 | 2024-06-06 | 120.000 |          4 |
+|         20 | 2024-06-01 | 150.000 |          5 |
+|         21 | 2024-07-02 | 250.000 |          1 |
+|         22 | 2024-08-04 | 170.000 |          2 |
+|         23 | 2024-08-10 | 120.000 |          3 |
+|         24 | 2024-08-11 | 110.000 |          4 |
+|         25 | 2024-09-12 |  50.000 |          5 |
+|         26 | 2024-10-18 |  60.000 |          1 |
+|         27 | 2024-11-12 |  70.000 |          2 |
+|         28 | 2024-11-25 |  75.000 |          4 |
+|         29 | 2024-12-15 |  85.000 |          3 |
+|         30 | 2024-12-25 | 150.000 |          5 |
+|         31 | 2024-12-15 | 120.000 |          1 |
+|         32 | 2024-12-29 |  30.000 |          2 |
++------------+------------+---------+------------+
+~~~
+
+5. Crear un procedimiento almacenado para obtener el historial de reparaciones
+de un vehículo
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS historia_reparaciones;
+CREATE PROCEDURE historia_reparaciones(
+IN hr_vehiculo_id INT
+)
+BEGIN
+SELECT reparacion_id, fecha, vehiculo_id,empleado_id, servicio_id,costo_total,duracion,descripcion
+FROM reparaciones
+WHERE vehiculo_id = hr_vehiculo_id;
+END$$
+
+DELIMITER ;
+
+CALL historia_reparaciones(1);
++---------------+------------+-------------+-------------+-------------+-------------+----------+-----------------------------------------+
+| reparacion_id | fecha      | vehiculo_id | empleado_id | servicio_id | costo_total | duracion | descripcion                             |
++---------------+------------+-------------+-------------+-------------+-------------+----------+-----------------------------------------+
+|             1 | 2023-01-15 |           1 |           2 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|             8 | 2023-08-29 |           1 |           4 |           3 |      70.000 | 01:00:00 | Revision frenos del vehiculo            |
+|            15 | 2024-03-12 |           1 |           6 |           3 |      70.000 | 01:00:00 | Revision frenos del vehiculo            |
+|            16 | 2024-04-10 |           1 |           4 |           4 |     100.000 | 01:00:00 | Recarga Aire Acondicionado del vehiculo |
+|            24 | 2024-08-11 |           1 |           6 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            32 | 2024-01-15 |           1 |           2 |           1 |      50.000 | 02:00:00 | Mantenimento al vehiculo                |
+|            33 | 2024-08-01 |           1 |           2 |           2 |      20.000 | 02:00:00 | NUEVO SERVICIO                          |
++---------------+------------+-------------+-------------+-------------+-------------+----------+-----------------------------------------+
+~~~
+
+6. Crear un procedimiento almacenado para calcular el costo total de
+reparaciones de un cliente en un período
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS costo_total_reparaciones_cliente;
+CREATE PROCEDURE costo_total_reparaciones_cliente(
+IN cr_cliente_id INT,
+IN cr_fecha_inicio DATE,
+IN cr_fecha_fin DATE
+)
+BEGIN
+SELECT cli.nombre, cli.apellido, SUM(rep.costo_total)
+FROM reparaciones AS rep
+INNER JOIN vehiculo AS veh
+ON rep.vehiculo_id = veh.vehiculo_id
+INNER JOIN cliente AS cli
+ON cli.cliente_id = veh.cliente_id
+WHERE cli.cliente_id = cr_cliente_id
+AND rep.fecha BETWEEN cr_fecha_inicio AND cr_fecha_fin
+GROUP BY cli.nombre, cli.apellido;
+END $$
+
+DELIMITER ;
+
+CALL costo_total_reparaciones_cliente(1, '2024-06-01', '2024-07-30');
++--------+----------+----------------------+
+| nombre | apellido | SUM(rep.costo_total) |
++--------+----------+----------------------+
+| Juan   | Torres   |              100.000 |
++--------+----------+----------------------+
+~~~
+
+
+7. Crear un procedimiento almacenado para obtener la lista de vehículos que
+requieren mantenimiento basado en el kilometraje.
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS requiere_mantenimiento;
+CREATE PROCEDURE requiere_mantenimiento(
+IN rm_kilometraje_limite INT
+)
+BEGIN
+SELECT vehiculo_id, placa, kilometraje, rm_kilometraje_limite
+FROM vehiculo
+WHERE kilometraje > rm_kilometraje_limite;
+END $$
+
+DELIMITER ;
+
+CALL requiere_mantenimiento(100000);
++-------------+---------+-------------+-----------------------+
+| vehiculo_id | placa   | kilometraje | rm_kilometraje_limite |
++-------------+---------+-------------+-----------------------+
+|           5 | KSO 754 |      105000 |                100000 |
+|           6 | PPP 258 |      120000 |                100000 |
++-------------+---------+-------------+-----------------------+
+~~~
+
+8. Crear un procedimiento almacenado para insertar una nueva orden de compra
+
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS nueva_orden;
+CREATE PROCEDURE nueva_orden(
+IN no_fecha DATE,
+IN no_proveedor_id INT,
+IN no_empleado_id INT,
+IN no_total DOUBLE(10,3)
+)
+BEGIN
+INSERT INTO orden_compra(orden_id,fecha,proveedor_id,empleado_id,total)
+VALUES(NULL, no_fecha, no_proveedor_id, no_empleado_id, no_total);
+END $$
+
+DELIMITER ; 
+
+CALL nueva_orden('2024-06-07', 1,1,20.000);
++----------+------------+--------------+-------------+---------+
+| orden_id | fecha      | proveedor_id | empleado_id | total   |
++----------+------------+--------------+-------------+---------+
+|        1 | 2023-02-03 |            1 |           2 |  60.000 |
+|        2 | 2023-06-05 |            2 |           3 |  70.000 |
+|        3 | 2023-09-08 |            3 |           4 |  80.000 |
+|        4 | 2024-03-15 |            4 |           5 |  90.000 |
+|        5 | 2024-04-22 |            1 |           6 | 100.000 |
+|        6 | 2024-05-30 |            2 |           2 |  25.000 |
+|        7 | 2024-06-05 |            3 |           3 |  40.000 |
+|        8 | 2024-06-05 |            4 |           2 |  50.000 |
+|        9 | 2024-06-07 |            1 |           1 |  20.000 |
++----------+------------+--------------+-------------+---------+
+~~~
+
+9. Crear un procedimiento almacenado para actualizar los datos de un cliente
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS actualizar_cliente;
+CREATE PROCEDURE actualizar_cliente(
+IN ac_cliente_id INT,
+IN ac_nombre VARCHAR(25),
+IN ac_apellido VARCHAR(25),
+IN ac_direccion VARCHAR(50),
+IN ac_ciudad_id INT,
+IN ac_telefono_cliente_id INT
+)
+BEGIN
+UPDATE cliente
+SET nombre = ac_nombre,
+apellido = ac_apellido,
+direccion = ac_direccion,
+ciudad_id = ac_ciudad_id,
+telefono_cliente_id = ac_telefono_cliente_id
+WHERE cliente_id = ac_cliente_id;
+END $$
+
+DELIMITER ; 
+
+CALL actualizar_cliente (1,'Juan','Torress', 'blablaBogota',1,1);
++------------+--------+----------+----------------+-----------+---------------------+
+| cliente_id | nombre | apellido | direccion      | ciudad_id | telefono_cliente_id |
++------------+--------+----------+----------------+-----------+---------------------+
+|          1 | Juan   | Torress  | blablaBogota   |         1 |                   1 |
+|          2 | Alvaro | Sánchez  | cra 8B 3s #4   |         1 |                   2 |
+|          3 | Maryi  | Leon     | cra 7B 3s #4   |         1 |                   3 |
+|          4 | Diana  | Leon     | cra 9C 2s #4   |         1 |                   4 |
+|          5 | Carlos | Diaz     | cra 4d 33s #54 |         1 |                   5 |
++------------+--------+----------+----------------+-----------+---------------------+
+~~~
+
+10. Crear un procedimiento almacenado para obtener los servicios más solicitados
+en un período
+~~~mysql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS servicio_mas_solicitado;
+CREATE PROCEDURE servicio_mas_solicitado(
+IN ss_fecha_inicio DATE,
+IN ss_fecha_fin DATE
+)
+BEGIN
+SELECT ser.nombre, COUNT(rep.reparacion_id) AS 'cantidad reparaciones'
+FROM servicio AS ser
+INNER JOIN reparaciones AS rep
+ON rep.servicio_id = ser.servicio_id
+WHERE rep.fecha BETWEEN DATE(ss_fecha_inicio) AND DATE(ss_fecha_fin)
+GROUP BY ser.nombre
+ORDER BY COUNT(rep.reparacion_id) DESC
+LIMIT 1;
+END$$
+
+DELIMITER ;
+
+CALL servicio_mas_solicitado('2024-01-01','2024-12-31');
+
++---------------+-----------------------+
+| nombre        | cantidad reparaciones |
++---------------+-----------------------+
+| Mantenimiento |                     5 |
++---------------+-----------------------+
+~~~
