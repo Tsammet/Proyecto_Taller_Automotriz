@@ -1,4 +1,4 @@
-~~~mysqlCREATE DATABASE tienda_autos;~~~
+~~~mysql CREATE DATABASE tienda_autos; ~~~
 USE tienda_autos;
 
 CREATE TABLE pais(
