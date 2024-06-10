@@ -196,3 +196,218 @@ ORDER BY cantidad DESC;
 |           6 | Lavado                |        1 |
 +-------------+-----------------------+----------+
 ~~~
+
+11. Obtener el costo total de reparaciones para cada cliente en un período
+específico
+
+~~~mysql
+SELECT cli.cliente_id, SUM(rep.costo_total) AS 'COSTO TOTAL REPARACIONES'
+FROM reparaciones AS rep
+INNER JOIN vehiculo AS veh
+ON rep.vehiculo_id = veh.vehiculo_id
+INNER JOIN cliente AS cli
+ON veh.cliente_id = cli.cliente_id
+WHERE rep.fecha BETWEEN '2024-06-01' AND '2024-09-30'
+GROUP BY cli.cliente_id;
+
++------------+--------------------------+
+| cliente_id | COSTO TOTAL REPARACIONES |
++------------+--------------------------+
+|          1 |                  150.000 |
+|          2 |                  110.000 |
+|          4 |                   55.000 |
+|          5 |                  100.000 |
++------------+--------------------------+
+~~~
+
+
+12. Listar los empleados con mayor cantidad de reparaciones realizadas en un
+período específico
+
+~~~mysql
+SELECT CONCAT(emp.nombre, ' ', emp.apellido) AS 'Nombre Empleado', COUNT(rep.reparacion_id)
+FROM empleado AS emp
+INNER JOIN reparaciones AS rep
+ON emp.empleado_id = rep.empleado_id
+WHERE rep.fecha BETWEEN '2024-01-01' AND '2024-12-31'
+GROUP BY CONCAT(emp.nombre, ' ', emp.apellido)
+ORDER BY COUNT(rep.reparacion_id) DESC;
+
++-----------------+--------------------------+
+| Nombre Empleado | COUNT(rep.reparacion_id) |
++-----------------+--------------------------+
+| Daniel Poveda   |                        5 |
+| Carlos Tobar    |                        4 |
+| Alberto Pachon  |                        4 |
+| Diego Barrios   |                        4 |
+| Carlos Basto    |                        3 |
++-----------------+--------------------------+
+~~~
+
+
+13. Obtener las piezas más utilizadas en reparaciones durante un período
+específico
+
+~~~mysql
+SELECT pie.nombre, SUM(repi.cantidad) AS 'CANTIDAD PIEZAS USADAS'
+FROM reparacion_pieza AS repi
+INNER JOIN pieza AS pie
+ON pie.pieza_id = repi.pieza_id
+INNER JOIN reparaciones AS rep
+ON rep.reparacion_id = repi.reparacion_id
+WHERE rep.fecha BETWEEN '2024-06-01' AND '2024-09-30'
+GROUP BY pie.nombre
+ORDER BY SUM(repi.cantidad) DESC;
+
++--------------------+------------------------+
+| nombre             | CANTIDAD PIEZAS USADAS |
++--------------------+------------------------+
+| Radiadores         |                     12 |
+| Mangueras Radiador |                      8 |
+| Bombas Agua        |                      7 |
+| Tuercas            |                      6 |
+| Termostatos        |                      5 |
+| Bateria            |                      5 |
+| Retrovisor         |                      2 |
+| LLanta             |                      1 |
++--------------------+------------------------+
+~~~
+
+
+14. Calcular el promedio de costo de reparaciones por vehículo
+
+~~~mysql
+SELECT veh.placa, AVG(rep.costo_total) AS 'Promedio Costo Reparaciones'
+FROM vehiculo AS veh
+INNER JOIN reparaciones AS rep
+ON veh.vehiculo_id = rep.vehiculo_id
+GROUP BY veh.placa;
+
++---------+-----------------------------+
+| placa   | Promedio Costo Reparaciones |
++---------+-----------------------------+
+| TSM 616 |                  65.0000000 |
+| FIZ 516 |                  51.0000000 |
+| RIP 123 |                  59.0000000 |
+| KHT 243 |                  63.7500000 |
+| KSO 754 |                  61.0000000 |
+| PPP 258 |                  51.2500000 |
+| AMD 924 |                  76.6666667 |
++---------+-----------------------------+
+~~~
+
+
+15. Obtener el inventario de piezas por proveedor
+
+~~~mysql
+SELECT pro.proveedor_id, pro.nombre AS 'nombre proveedor', pie.nombre AS 'nombre pieza', pie.descripcion, pie.precio, inv.cantidad
+FROM inventario AS inv
+INNER JOIN pieza AS pie
+ON pie.pieza_id = inv.pieza_id
+INNER JOIN proveedor AS pro
+ON pro.proveedor_id = pie.proveedor_id
+ORDER BY pro.proveedor_id;
+
++--------------+---------------------+--------------------+-------------------------------+---------+----------+
+| proveedor_id | nombre proveedor    | nombre pieza       | descripcion                   | precio  | cantidad |
++--------------+---------------------+--------------------+-------------------------------+---------+----------+
+|            1 | Auto Parts          | Retrovisor         | Retrovisores para carro       |  25.000 |       10 |
+|            1 | Auto Parts          | Filtros Aire       | Filtros Aire para carro       |  20.000 |       15 |
+|            1 | Auto Parts          | Mangueras Radiador | mangueras radiador para carro |  50.000 |        8 |
+|            2 | Reparaciones Carros | LLanta             | LLanta para el carro          | 150.000 |       20 |
+|            2 | Reparaciones Carros | Bujias             | Bujias para carro             |  15.000 |       25 |
+|            2 | Reparaciones Carros | Termostatos        | Termostatos para carro        |  15.000 |        7 |
+|            2 | Reparaciones Carros | Tuercas            | Tuercas para el carro         |   5.000 |       65 |
+|            3 | Cuidados carros     | Bateria            | Baterias para carro           | 150.000 |      156 |
+|            3 | Cuidados carros     | Radiadores         | Radiadores para carro         |  50.000 |        5 |
+|            4 | cars                | Tornillos          | Tornillos  para carro         |   2.000 |       55 |
+|            4 | cars                | Bombas Agua        | Bombas Agua para carro        |  25.000 |       10 |
++--------------+---------------------+--------------------+-------------------------------+---------+----------+
+~~~
+
+16. Listar los clientes que no han realizado reparaciones en el último año
+
+~~~mysql
+SELECT cli.nombre
+FROM cliente AS cli
+LEFT JOIN vehiculo AS veh
+ON cli.cliente_id = veh.cliente_id
+LEFT JOIN reparaciones AS rep
+ON veh.vehiculo_id = rep.vehiculo_id
+WHERE YEAR(fecha) is NULL;
+~~~
+
+
+17. Obtener las ganancias totales del taller en un período específico
+
+~~~mysql
+SELECT SUM(total) AS 'GANANCIAS TOTALES'
+FROM facturacion
+WHERE fecha BETWEEN '2024-01-01' AND '2024-12-31';
+
++-------------------+
+| GANANCIAS TOTALES |
++-------------------+
+|          2350.000 |
++-------------------+
+~~~
+
+
+18. Listar los empleados y el total de horas trabajadas en reparaciones en un
+período específico (asumiendo que se registra la duración de cada reparación)
+
+~~~mysql
+SELECT emp.nombre, emp.apellido,SEC_TO_TIME(SUM(TIME_TO_SEC(rep.duracion)))
+FROM empleado AS emp
+INNER JOIN reparaciones AS rep
+ON emp.empleado_id = rep.empleado_id
+WHERE rep.fecha BETWEEN '2024-01-01' AND '2024-12-31'
+GROUP BY emp.nombre, emp.apellido;
+
++---------+----------+---------------------------------------------+
+| nombre  | apellido | SEC_TO_TIME(SUM(TIME_TO_SEC(rep.duracion))) |
++---------+----------+---------------------------------------------+
+| Daniel  | Poveda   | 09:00:00                                    |
+| Diego   | Barrios  | 05:00:00                                    |
+| Carlos  | Basto    | 04:00:00                                    |
+| Alberto | Pachon   | 04:00:00                                    |
+| Carlos  | Tobar    | 06:00:00                                    |
++---------+----------+---------------------------------------------+
+~~~
+
+19. Obtener el listado de servicios prestados por cada empleado en un período
+específico
+
+~~~mysql
+SELECT emp.nombre, emp.apellido, ser.nombre AS 'Nombre Servicio'
+FROM empleado AS emp
+INNER JOIN reparaciones AS rep
+ON emp.empleado_id = rep.empleado_id
+INNER JOIN servicio AS ser
+ON rep.servicio_id = ser.servicio_id
+WHERE rep.fecha BETWEEN '2024-01-01' AND '2024-12-31';
++---------+----------+-----------------------+
+| nombre  | apellido | Nombre Servicio       |
++---------+----------+-----------------------+
+| Carlos  | Tobar    | Aire Acondicionado    |
+| Carlos  | Tobar    | Mantenimiento         |
+| Carlos  | Tobar    | Lavado                |
+| Carlos  | Tobar    | Mantenimiento         |
+| Alberto | Pachon   | Reparacion parabrisas |
+| Alberto | Pachon   | Lavado                |
+| Alberto | Pachon   | Aire Acondicionado    |
+| Alberto | Pachon   | Cambio Aceite         |
+| Daniel  | Poveda   | Mantenimiento         |
+| Daniel  | Poveda   | Aire Acondicionado    |
+| Daniel  | Poveda   | Cambio Aceite         |
+| Daniel  | Poveda   | Reparacion parabrisas |
+| Daniel  | Poveda   | Lavado                |
+| Diego   | Barrios  | Cambio Aceite         |
+| Diego   | Barrios  | Revision Frenos       |
+| Diego   | Barrios  | Reparacion parabrisas |
+| Diego   | Barrios  | Mantenimiento         |
+| Carlos  | Basto    | Revision Frenos       |
+| Carlos  | Basto    | Lavado                |
+| Carlos  | Basto    | Mantenimiento         |
++---------+----------+-----------------------+
+~~~
