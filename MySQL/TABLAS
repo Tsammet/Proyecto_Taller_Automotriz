@@ -1,4 +1,4 @@
-~~~mysqlCREATE DATABASE tienda_autos;
+~~~mysqlCREATE DATABASE tienda_autos;~~~
 USE tienda_autos;
 
 CREATE TABLE pais(
@@ -212,4 +212,4 @@ CREATE TABLE reparacion_pieza(
 	PRIMARY KEY(reparacion_id, pieza_id),
 	FOREIGN KEY(reparacion_id) REFERENCES reparaciones(reparacion_id),
 	FOREIGN KEY(pieza_id) REFERENCES pieza(pieza_id)	
-);~~~
+);
