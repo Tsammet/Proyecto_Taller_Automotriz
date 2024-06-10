@@ -411,3 +411,115 @@ WHERE rep.fecha BETWEEN '2024-01-01' AND '2024-12-31';
 | Carlos  | Basto    | Mantenimiento         |
 +---------+----------+-----------------------+
 ~~~
+
+
+SUBCONSULTAS
+
+1. Obtener el cliente que ha gastado más en reparaciones durante el último año.
+
+~~~mysql
+SELECT cli.nombre, cli.apellido, SUM(rep.costo_total) AS 'gasto total reparaciones'
+FROM cliente AS cli
+INNER JOIN vehiculo AS veh
+ON cli.cliente_id = veh.cliente_id
+INNER JOIN reparaciones AS rep
+ON rep.vehiculo_id = veh.vehiculo_id
+WHERE rep.reparacion_id IN (SELECT rep1.reparacion_id
+FROM reparaciones AS rep1 
+WHERE rep1.fecha BETWEEN '2024-01-01' AND '2024-12-31')
+GROUP BY cli.nombre, cli.apellido
+ORDER BY SUM(rep.costo_total) DESC
+LIMIT 1;
+
++--------+----------+--------------------------+
+| nombre | apellido | gasto total reparaciones |
++--------+----------+--------------------------+
+| Juan   | Torres   |                  445.000 |
++--------+----------+--------------------------+
+~~~
+
+2. Obtener la pieza más utilizada en reparaciones durante el último mes
+
+~~~mysql
+SELECT pie.nombre, MAX(repi.cantidad)
+FROM pieza AS pie
+INNER JOIN reparacion_pieza as repi
+ON pie.pieza_id = repi.pieza_id
+INNER JOIN reparaciones AS rep
+ON rep.reparacion_id = repi.reparacion_id
+WHERE rep.reparacion_id IN(
+SELECT rep1.reparacion_id
+FROM reparaciones AS rep1
+WHERE rep1.fecha BETWEEN '2024-06-01' AND '2024-06-30'
+)
+GROUP BY pie.nombre
+ORDER BY MAX(repi.cantidad) DESC
+LIMIT 1
+;
++------------+--------------------+
+| nombre     | MAX(repi.cantidad) |
++------------+--------------------+
+| Radiadores |                 12 |
++------------+--------------------+
+~~~
+
+3. Obtener los proveedores que suministran las piezas más caras
+
+~~~mysql
+SELECT pro.nombre, pie.precio, pie.nombre
+FROM proveedor AS pro
+INNER JOIN pieza AS pie
+ON pro.proveedor_id = pie.proveedor_id
+WHERE pie.precio IN(
+SELECT MAX(pie1.precio)
+FROM pieza AS pie1);
+
++---------------------+---------+---------+
+| nombre              | precio  | nombre  |
++---------------------+---------+---------+
+| Reparaciones Carros | 150.000 | LLanta  |
+| Cuidados carros     | 150.000 | Bateria |
++---------------------+---------+---------+
+~~~
+
+4. Listar las reparaciones que no utilizaron piezas específicas durante el último
+año
+
+~~~mysql
+SELECT rep.reparacion_id
+FROM reparaciones AS rep
+LEFT JOIN reparacion_pieza AS repi
+ON rep.reparacion_id = repi.reparacion_id
+WHERE rep.reparacion_id IN (SELECT rep2.reparacion_id 
+FROM reparaciones AS rep2
+LEFT JOIN reparacion_pieza AS repi2
+ON rep2.reparacion_id = repi2.reparacion_id
+WHERE YEAR(rep.fecha) = 2024
+AND repi2.pieza_id IS NULL);
+
++---------------+
+| reparacion_id |
++---------------+
+|            32 |
++---------------+
+~~~
+
+5. Obtener las piezas que están en inventario por debajo del 10% del stock inicial
+
+~~~mysql
+SELECT pie.nombre
+FROM pieza AS pie
+INNER JOIN inventario AS inv
+ON pie.pieza_id = inv.pieza_id
+WHERE pie.pieza_id IN (
+SELECT inv2.pieza_id
+FROM inventario AS inv2
+WHERE inv2.cantidad < inv2.stock_inicial * 0.1);
+
++-------------+
+| nombre      |
++-------------+
+| Radiadores  |
+| Termostatos |
++-------------+
+~~~
